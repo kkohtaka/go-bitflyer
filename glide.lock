@@ -1,8 +1,10 @@
-hash: 73209dbfa3cbf3755d2d5be70cfd31bdba3531c7390e0084eaa3a37bcdd8a49a
-updated: 2017-12-09T02:16:31.370177555+09:00
+hash: 5a9a30df1e34fe127be3f4e8f13c350cdc65453290bd807b1891f0d2249ff642
+updated: 2017-12-09T03:24:49.446645523+09:00
 imports:
 - name: github.com/google/go-querystring
   version: 53e6ce116135b80d037921a7fdd5138cf32d7a8a
   subpackages:
   - query
+- name: github.com/json-iterator/go
+  version: f7279a603edee96fe7764d3de9c6ff8cf9970994
 testImports: []

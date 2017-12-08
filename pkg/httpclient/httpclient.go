@@ -4,12 +4,16 @@
 package utils
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/kkohtaka/go-bitflyer/pkg/api"
+)
+
+var (
+	json = jsoniter.ConfigCompatibleWithStandardLibrary
 )
 
 func Get(api api.API, req api.Request, result interface{}) error {
