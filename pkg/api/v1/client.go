@@ -3,7 +3,10 @@
 
 package v1
 
-import "github.com/kkohtaka/go-bitflyer/pkg/api/v1/markets"
+import (
+	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/board"
+	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/markets"
+)
 
 const (
 	APIHost string = "https://api.bitflyer.jp/v1"
@@ -25,4 +28,8 @@ func (c *Client) APIHost() string {
 
 func (c *Client) Markets(req *markets.Request) (*markets.Response, error) {
 	return markets.NewAPI(c).Execute(req)
+}
+
+func (c *Client) Board(req *board.Request) (*board.Response, error) {
+	return board.NewAPI(c).Execute(req)
 }
