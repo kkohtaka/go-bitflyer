@@ -1,0 +1,5 @@
+# Copyright (C) 2017 Kazumasa Kohtaka <kkohtaka@gmail.com> All right reserved
+# This file is available under the MIT license.
+
+/glide.lock linguist-generated
+/vendor/ linguist-vendored linguist-generated
