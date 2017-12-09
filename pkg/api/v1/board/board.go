@@ -5,40 +5,39 @@ package board
 
 import (
 	"fmt"
-	"log"
-	"net/url"
 
-	"github.com/kkohtaka/go-bitflyer/pkg/api"
-	httpclient "github.com/kkohtaka/go-bitflyer/pkg/httpclient"
+	"github.com/google/go-querystring/query"
+	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/markets"
 )
 
-type API struct {
-	url string
+type Book struct {
+	Price float64 `json:"price"`
+	Size  float64 `json:"size"`
+}
+
+type Request struct {
+	ProductCode markets.ProductCode `json:"product_code" url:"product_code"`
+}
+
+type Response struct {
+	MidPrice float64 `json:"mid_price"`
+	Bids     []Book  `json:"bids"`
+	Asks     []Book  `json:"asks"`
 }
 
 const (
 	APIPath string = "board"
 )
 
-func NewAPI(c api.Client) *API {
-	return &API{
-		url: fmt.Sprintf("%s/%s", c.APIHost(), APIPath),
-	}
+func (req *Request) Query() string {
+	values, _ := query.Values(req)
+	return values.Encode()
 }
 
-func (api *API) BaseURL() url.URL {
-	u, err := url.ParseRequestURI(api.url)
-	if err != nil {
-		log.Fatalf("Failed parsing a request URI: %+v", err)
-	}
-	return *u
+func (req *Request) Payload() []byte {
+	return nil
 }
 
-func (api *API) Execute(req *Request) (*Response, error) {
-	var resp Response
-	err := httpclient.Get(api, req, &resp)
-	if err != nil {
-		return nil, err
-	}
-	return &resp, nil
+func (b Book) String() string {
+	return fmt.Sprintf("%g (x %g)", b.Price, b.Size)
 }

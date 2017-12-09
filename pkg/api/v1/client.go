@@ -6,6 +6,7 @@ package v1
 import (
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/board"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/markets"
+	httpclient "github.com/kkohtaka/go-bitflyer/pkg/httpclient"
 )
 
 const (
@@ -27,9 +28,19 @@ func (c *Client) APIHost() string {
 }
 
 func (c *Client) Markets(req *markets.Request) (*markets.Response, error) {
-	return markets.NewAPI(c).Execute(req)
+	var resp markets.Response
+	err := httpclient.Get(NewAPI(c, markets.APIPath), req, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
 }
 
 func (c *Client) Board(req *board.Request) (*board.Response, error) {
-	return board.NewAPI(c).Execute(req)
+	var resp board.Response
+	err := httpclient.Get(NewAPI(c, board.APIPath), req, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
 }

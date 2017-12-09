@@ -3,42 +3,34 @@
 
 package markets
 
-import (
-	"fmt"
-	"log"
-	"net/url"
+import "fmt"
 
-	"github.com/kkohtaka/go-bitflyer/pkg/api"
-	httpclient "github.com/kkohtaka/go-bitflyer/pkg/httpclient"
-)
+type Request struct{}
 
-type API struct {
-	url string
+type Response []Market
+
+type Market struct {
+	ProductCode ProductCode `json:"product_code"`
+	Alias       ProductCode `json:"alias"`
 }
+
+type ProductCode string
 
 const (
 	APIPath string = "markets"
 )
 
-func NewAPI(c api.Client) *API {
-	return &API{
-		url: fmt.Sprintf("%s/%s", c.APIHost(), APIPath),
-	}
+func (req *Request) Query() string {
+	return ""
 }
 
-func (api *API) BaseURL() url.URL {
-	u, err := url.ParseRequestURI(api.url)
-	if err != nil {
-		log.Fatalf("Failed parsing a request URI: %+v", err)
-	}
-	return *u
+func (req *Request) Payload() []byte {
+	return nil
 }
 
-func (api *API) Execute(req *Request) (*Response, error) {
-	var resp Response
-	err := httpclient.Get(api, req, &resp)
-	if err != nil {
-		return nil, err
+func (m Market) String() string {
+	if m.Alias == "" {
+		return string(m.ProductCode)
 	}
-	return &resp, nil
+	return fmt.Sprintf("%s (%s)", m.ProductCode, m.Alias)
 }
