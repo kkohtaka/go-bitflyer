@@ -14,6 +14,7 @@ type API interface {
 }
 
 type Request interface {
+	Method() string
 	Query() string
 	Payload() []byte
 }

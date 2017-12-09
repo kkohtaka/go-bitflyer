@@ -4,6 +4,8 @@
 package health
 
 import (
+	"net/http"
+
 	"github.com/google/go-querystring/query"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/markets"
 )
@@ -19,7 +21,7 @@ type Response struct {
 type Status string
 
 const (
-	APIPath string = "gethealth"
+	APIPath string = "/v1/gethealth"
 
 	Normal    Status = "NORMAL"
 	Busy      Status = "BUSY"
@@ -27,6 +29,10 @@ const (
 	SuperBusy Status = "SUPER BUSY"
 	Stop      Status = "STOP"
 )
+
+func (req *Request) Method() string {
+	return http.MethodGet
+}
 
 func (req *Request) Query() string {
 	values, _ := query.Values(req)

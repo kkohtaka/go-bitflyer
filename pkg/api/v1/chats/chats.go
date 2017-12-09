@@ -3,7 +3,11 @@
 
 package chats
 
-import "github.com/google/go-querystring/query"
+import (
+	"net/http"
+
+	"github.com/google/go-querystring/query"
+)
 
 type Request struct {
 	FromDate string `json:"from_date,omitempty"` // TODO: Treat timestamp as time.Time
@@ -18,8 +22,12 @@ type Chat struct {
 }
 
 const (
-	APIPath string = "getchats"
+	APIPath string = "/v1/getchats"
 )
+
+func (req *Request) Method() string {
+	return http.MethodGet
+}
 
 func (req *Request) Query() string {
 	values, _ := query.Values(req)

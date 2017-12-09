@@ -4,6 +4,8 @@
 package ticker
 
 import (
+	"net/http"
+
 	"github.com/google/go-querystring/query"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/markets"
 )
@@ -29,8 +31,12 @@ type Response struct {
 }
 
 const (
-	APIPath string = "getticker"
+	APIPath string = "/v1/getticker"
 )
+
+func (req *Request) Method() string {
+	return http.MethodGet
+}
 
 func (req *Request) Query() string {
 	values, _ := query.Values(req)

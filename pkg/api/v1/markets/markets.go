@@ -3,7 +3,10 @@
 
 package markets
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+)
 
 type Request struct{}
 
@@ -17,8 +20,12 @@ type Market struct {
 type ProductCode string
 
 const (
-	APIPath string = "getmarkets"
+	APIPath string = "/v1/getmarkets"
 )
+
+func (req *Request) Method() string {
+	return http.MethodGet
+}
 
 func (req *Request) Query() string {
 	return ""

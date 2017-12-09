@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	APIHost string = "https://api.bitflyer.jp/v1"
+	APIHost string = "https://api.bitflyer.jp"
 )
 
 type Client struct {

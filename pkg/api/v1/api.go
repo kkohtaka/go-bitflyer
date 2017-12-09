@@ -15,7 +15,7 @@ type API struct {
 
 func NewAPI(c *Client, apiPath string) *API {
 	return &API{
-		url: fmt.Sprintf("%s/%s", c.APIHost(), apiPath),
+		url: fmt.Sprintf("%s%s", c.APIHost(), apiPath),
 	}
 }
 

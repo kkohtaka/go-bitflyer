@@ -5,6 +5,7 @@ package board
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/google/go-querystring/query"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/markets"
@@ -26,8 +27,12 @@ type Response struct {
 }
 
 const (
-	APIPath string = "getboard"
+	APIPath string = "/v1/getboard"
 )
+
+func (req *Request) Method() string {
+	return http.MethodGet
+}
 
 func (req *Request) Query() string {
 	values, _ := query.Values(req)
