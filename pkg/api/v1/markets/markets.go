@@ -17,7 +17,7 @@ type Market struct {
 type ProductCode string
 
 const (
-	APIPath string = "markets"
+	APIPath string = "getmarkets"
 )
 
 func (req *Request) Query() string {

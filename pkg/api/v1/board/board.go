@@ -26,7 +26,7 @@ type Response struct {
 }
 
 const (
-	APIPath string = "board"
+	APIPath string = "getboard"
 )
 
 func (req *Request) Query() string {
