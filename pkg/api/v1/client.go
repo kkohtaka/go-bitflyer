@@ -6,6 +6,7 @@ package v1
 import (
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/board"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/executions"
+	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/health"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/markets"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/ticker"
 	httpclient "github.com/kkohtaka/go-bitflyer/pkg/httpclient"
@@ -59,6 +60,15 @@ func (c *Client) Ticker(req *ticker.Request) (*ticker.Response, error) {
 func (c *Client) Executions(req *executions.Request) (*executions.Response, error) {
 	var resp executions.Response
 	err := httpclient.Get(NewAPI(c, executions.APIPath), req, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+func (c *Client) Health(req *health.Request) (*health.Response, error) {
+	var resp health.Response
+	err := httpclient.Get(NewAPI(c, health.APIPath), req, &resp)
 	if err != nil {
 		return nil, err
 	}
