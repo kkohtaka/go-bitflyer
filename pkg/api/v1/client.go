@@ -10,6 +10,7 @@ import (
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/executions"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/health"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/markets"
+	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/permissions"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/ticker"
 	httpclient "github.com/kkohtaka/go-bitflyer/pkg/httpclient"
 )
@@ -38,6 +39,8 @@ func NewClient(opts *ClientOpts) *Client {
 func (c *Client) APIHost() string {
 	return c.Host
 }
+
+// Public APIs
 
 func (c *Client) Markets(req *markets.Request) (*markets.Response, error) {
 	var resp markets.Response
@@ -87,6 +90,17 @@ func (c *Client) Health(req *health.Request) (*health.Response, error) {
 func (c *Client) Chats(req *chats.Request) (*chats.Response, error) {
 	var resp chats.Response
 	err := httpclient.New().Request(NewAPI(c, chats.APIPath), req, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Private APIs
+
+func (c *Client) Permissions(req *permissions.Request) (*permissions.Response, error) {
+	var resp permissions.Response
+	err := httpclient.New().Auth(c.AuthConfig).Request(NewAPI(c, permissions.APIPath), req, &resp)
 	if err != nil {
 		return nil, err
 	}
