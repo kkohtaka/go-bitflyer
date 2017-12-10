@@ -4,24 +4,57 @@
 package utils
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	jsoniter "github.com/json-iterator/go"
 	"github.com/kkohtaka/go-bitflyer/pkg/api"
+	"github.com/kkohtaka/go-bitflyer/pkg/api/auth"
 )
 
 var (
 	json = jsoniter.ConfigCompatibleWithStandardLibrary
 )
 
-func Get(api api.API, req api.Request, result interface{}) error {
+type httpClient struct {
+	authConfig *auth.AuthConfig
+}
+
+func New() *httpClient {
+	return &httpClient{}
+}
+
+func (hc *httpClient) Auth(authConfig *auth.AuthConfig) *httpClient {
+	hc.authConfig = authConfig
+	return hc
+}
+
+func (hc *httpClient) Request(api api.API, req api.Request, result interface{}) error {
 	u := api.BaseURL()
-	u.RawQuery = req.Query()
+	payload := req.Payload()
+
+	var body io.Reader
+	if len(payload) > 0 {
+		body = bytes.NewReader(payload)
+	}
+	rawReq, err := http.NewRequest(req.Method(), u.String(), body)
+	if err != nil {
+		fmt.Printf("failed creating a POST request from url: %s", u.String())
+		return err
+	}
+	if hc.authConfig != nil {
+		rawReq.Header = *(auth.GenerateAuthHeaders(hc.authConfig, time.Now(), api, req))
+	}
+	if len(payload) > 0 {
+		rawReq.Header.Set("Content-Type", "application/json")
+	}
 
 	c := &http.Client{}
-	resp, err := c.Get(u.String())
+	resp, err := c.Do(rawReq)
 	if err != nil {
 		fmt.Printf("failed getting resource from url: %s", u.String())
 		return err

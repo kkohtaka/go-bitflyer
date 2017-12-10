@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"github.com/kkohtaka/go-bitflyer/pkg/api/auth"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/board"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/chats"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/executions"
@@ -19,11 +20,18 @@ const (
 
 type Client struct {
 	Host string
+
+	AuthConfig *auth.AuthConfig
 }
 
-func NewClient() *Client {
+type ClientOpts struct {
+	AuthConfig *auth.AuthConfig
+}
+
+func NewClient(opts *ClientOpts) *Client {
 	return &Client{
-		Host: APIHost,
+		Host:       APIHost,
+		AuthConfig: opts.AuthConfig,
 	}
 }
 
@@ -33,7 +41,7 @@ func (c *Client) APIHost() string {
 
 func (c *Client) Markets(req *markets.Request) (*markets.Response, error) {
 	var resp markets.Response
-	err := httpclient.Get(NewAPI(c, markets.APIPath), req, &resp)
+	err := httpclient.New().Request(NewAPI(c, markets.APIPath), req, &resp)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +50,7 @@ func (c *Client) Markets(req *markets.Request) (*markets.Response, error) {
 
 func (c *Client) Board(req *board.Request) (*board.Response, error) {
 	var resp board.Response
-	err := httpclient.Get(NewAPI(c, board.APIPath), req, &resp)
+	err := httpclient.New().Request(NewAPI(c, board.APIPath), req, &resp)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +59,7 @@ func (c *Client) Board(req *board.Request) (*board.Response, error) {
 
 func (c *Client) Ticker(req *ticker.Request) (*ticker.Response, error) {
 	var resp ticker.Response
-	err := httpclient.Get(NewAPI(c, ticker.APIPath), req, &resp)
+	err := httpclient.New().Request(NewAPI(c, ticker.APIPath), req, &resp)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +68,7 @@ func (c *Client) Ticker(req *ticker.Request) (*ticker.Response, error) {
 
 func (c *Client) Executions(req *executions.Request) (*executions.Response, error) {
 	var resp executions.Response
-	err := httpclient.Get(NewAPI(c, executions.APIPath), req, &resp)
+	err := httpclient.New().Request(NewAPI(c, executions.APIPath), req, &resp)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +77,7 @@ func (c *Client) Executions(req *executions.Request) (*executions.Response, erro
 
 func (c *Client) Health(req *health.Request) (*health.Response, error) {
 	var resp health.Response
-	err := httpclient.Get(NewAPI(c, health.APIPath), req, &resp)
+	err := httpclient.New().Request(NewAPI(c, health.APIPath), req, &resp)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +86,7 @@ func (c *Client) Health(req *health.Request) (*health.Response, error) {
 
 func (c *Client) Chats(req *chats.Request) (*chats.Response, error) {
 	var resp chats.Response
-	err := httpclient.Get(NewAPI(c, chats.APIPath), req, &resp)
+	err := httpclient.New().Request(NewAPI(c, chats.APIPath), req, &resp)
 	if err != nil {
 		return nil, err
 	}
