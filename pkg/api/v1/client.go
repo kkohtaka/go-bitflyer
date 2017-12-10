@@ -5,6 +5,7 @@ package v1
 
 import (
 	"github.com/kkohtaka/go-bitflyer/pkg/api/auth"
+	"github.com/kkohtaka/go-bitflyer/pkg/api/httpclient"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/board"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/chats"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/executions"
@@ -12,7 +13,6 @@ import (
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/markets"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/permissions"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/ticker"
-	httpclient "github.com/kkohtaka/go-bitflyer/pkg/httpclient"
 )
 
 const (
