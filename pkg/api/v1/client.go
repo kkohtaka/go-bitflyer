@@ -8,6 +8,7 @@ import (
 	"github.com/kkohtaka/go-bitflyer/pkg/api/httpclient"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/addresses"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/balance"
+	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/bankaccounts"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/board"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/chats"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/coinins"
@@ -161,6 +162,15 @@ func (c *Client) Coinins(req *coinins.Request) (*coinins.Response, error) {
 func (c *Client) Coinouts(req *coinouts.Request) (*coinouts.Response, error) {
 	var resp coinouts.Response
 	err := httpclient.New().Auth(c.AuthConfig).Request(NewAPI(c, coinouts.APIPath), req, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+func (c *Client) BankAccounts(req *bankaccounts.Request) (*bankaccounts.Response, error) {
+	var resp bankaccounts.Response
+	err := httpclient.New().Auth(c.AuthConfig).Request(NewAPI(c, bankaccounts.APIPath), req, &resp)
 	if err != nil {
 		return nil, err
 	}
