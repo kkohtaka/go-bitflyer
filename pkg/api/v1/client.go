@@ -6,6 +6,7 @@ package v1
 import (
 	"github.com/kkohtaka/go-bitflyer/pkg/api/auth"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/httpclient"
+	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/balance"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/board"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/chats"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/executions"
@@ -101,6 +102,15 @@ func (c *Client) Chats(req *chats.Request) (*chats.Response, error) {
 func (c *Client) Permissions(req *permissions.Request) (*permissions.Response, error) {
 	var resp permissions.Response
 	err := httpclient.New().Auth(c.AuthConfig).Request(NewAPI(c, permissions.APIPath), req, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+func (c *Client) Balance(req *balance.Request) (*balance.Response, error) {
+	var resp balance.Response
+	err := httpclient.New().Auth(c.AuthConfig).Request(NewAPI(c, balance.APIPath), req, &resp)
 	if err != nil {
 		return nil, err
 	}
