@@ -6,9 +6,12 @@ package v1
 import (
 	"github.com/kkohtaka/go-bitflyer/pkg/api/auth"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/httpclient"
+	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/addresses"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/balance"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/board"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/chats"
+	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/coinins"
+	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/coinouts"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/collateral"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/collateralaccounts"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/executions"
@@ -131,6 +134,33 @@ func (c *Client) Collateral(req *collateral.Request) (*collateral.Response, erro
 func (c *Client) CollateralAccounts(req *collateralaccounts.Request) (*collateralaccounts.Response, error) {
 	var resp collateralaccounts.Response
 	err := httpclient.New().Auth(c.AuthConfig).Request(NewAPI(c, collateralaccounts.APIPath), req, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+func (c *Client) Addresses(req *addresses.Request) (*addresses.Response, error) {
+	var resp addresses.Response
+	err := httpclient.New().Auth(c.AuthConfig).Request(NewAPI(c, addresses.APIPath), req, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+func (c *Client) Coinins(req *coinins.Request) (*coinins.Response, error) {
+	var resp coinins.Response
+	err := httpclient.New().Auth(c.AuthConfig).Request(NewAPI(c, coinins.APIPath), req, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+func (c *Client) Coinouts(req *coinouts.Request) (*coinouts.Response, error) {
+	var resp coinouts.Response
+	err := httpclient.New().Auth(c.AuthConfig).Request(NewAPI(c, coinouts.APIPath), req, &resp)
 	if err != nil {
 		return nil, err
 	}

@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/google/go-querystring/query"
+	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/types"
 )
 
 type Request struct{}
@@ -14,9 +15,9 @@ type Request struct{}
 type Response []Asset
 
 type Asset struct {
-	ConcurrencyCode string  `json:"currency_code"`
-	Amount          float64 `json:"amount"`
-	Available       float64 `json:"available"`
+	CurrencyCode types.CurrencyCode `json:"currency_code"`
+	Amount       float64            `json:"amount"`
+	Available    float64            `json:"available"`
 }
 
 const (

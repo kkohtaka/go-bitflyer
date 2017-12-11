@@ -8,14 +8,13 @@ import (
 
 	"github.com/google/go-querystring/query"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/markets"
+	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/types"
 )
 
 type Request struct {
 	ProductCode markets.ProductCode `json:"product_code" url:"product_code"`
 
-	Count  int `json:"count,omitempty" url:"count,omitempty"`
-	Before int `json:"before,omitempty" url:"before,omitempty"`
-	After  int `json:"after,omitempty" url:"after,omitempty"`
+	Pagination types.Pagination `json:",inline"`
 }
 
 type Response []Execution

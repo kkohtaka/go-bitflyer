@@ -1,7 +1,7 @@
 // Copyright (C) 2017 Kazumasa Kohtaka <kkohtaka@gmail.com> All right reserved
 // This file is available under the MIT license.
 
-package collateralaccounts
+package addresses
 
 import (
 	"net/http"
@@ -12,15 +12,18 @@ import (
 
 type Request struct{}
 
-type Response []Account
+type Response []Address
 
-type Account struct {
+type Address struct {
+	Type         DepositType        `json:"type"`
 	CurrencyCode types.CurrencyCode `json:"currency_code"`
-	Amount       float64            `json:"amount"`
+	Address      string             `json:"address"`
 }
 
+type DepositType string
+
 const (
-	APIPath string = "/v1/me/getcollateralaccounts"
+	APIPath string = "/v1/me/getaddresses"
 )
 
 func (req *Request) Method() string {
