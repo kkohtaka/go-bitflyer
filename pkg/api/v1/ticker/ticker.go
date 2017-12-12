@@ -24,7 +24,7 @@ type Response struct {
 	BestBidSize     float64 `json:"best_bid_size"`
 	BestAskSize     float64 `json:"best_ask_size"`
 	TotalBidDepth   float64 `json:"total_bid_depth"`
-	TotakAskDepth   float64 `json:"total_ask_depth"`
+	TotalAskDepth   float64 `json:"total_ask_depth"`
 	LTP             float64 `json:"ltp"`
 	Volume          float64 `json:"volume"`
 	VolumeByProduct float64 `json:"volume_by_product"`
