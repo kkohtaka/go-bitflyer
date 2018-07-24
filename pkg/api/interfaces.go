@@ -10,7 +10,7 @@ type Client interface {
 }
 
 type API interface {
-	BaseURL() url.URL
+	BaseURL() (*url.URL, error)
 }
 
 type Request interface {

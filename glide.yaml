@@ -11,3 +11,5 @@ import:
   version: v1.1.0
   subpackages:
   - json
+- package: github.com/pkg/errors
+  version: v0.8.0

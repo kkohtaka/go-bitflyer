@@ -5,7 +5,6 @@ package httpclient
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -14,6 +13,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"github.com/kkohtaka/go-bitflyer/pkg/api"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/auth"
+	"github.com/pkg/errors"
 )
 
 var (
@@ -34,7 +34,10 @@ func (hc *httpClient) Auth(authConfig *auth.AuthConfig) *httpClient {
 }
 
 func (hc *httpClient) Request(api api.API, req api.Request, result interface{}) error {
-	u := api.BaseURL()
+	u, err := api.BaseURL()
+	if err != nil {
+		return errors.Wrapf(err, "set base URI")
+	}
 	payload := req.Payload()
 
 	var body io.Reader
@@ -43,11 +46,14 @@ func (hc *httpClient) Request(api api.API, req api.Request, result interface{}) 
 	}
 	rawReq, err := http.NewRequest(req.Method(), u.String(), body)
 	if err != nil {
-		fmt.Printf("failed creating a POST request from url: %s", u.String())
-		return err
+		return errors.Wrapf(err, "create POST request from url: %s", u.String())
 	}
 	if hc.authConfig != nil {
-		rawReq.Header = *(auth.GenerateAuthHeaders(hc.authConfig, time.Now(), api, req))
+		header, err := auth.GenerateAuthHeaders(hc.authConfig, time.Now(), api, req)
+		if err != nil {
+			return errors.Wrap(err, "generate auth header")
+		}
+		rawReq.Header = *header
 	}
 	if len(payload) > 0 {
 		rawReq.Header.Set("Content-Type", "application/json")
@@ -56,21 +62,19 @@ func (hc *httpClient) Request(api api.API, req api.Request, result interface{}) 
 	c := &http.Client{}
 	resp, err := c.Do(rawReq)
 	if err != nil {
-		fmt.Printf("failed getting resource from url: %s", u.String())
-		return err
+		return errors.Wrapf(err, "send HTTP request with url: %s", u.String())
 	}
 	defer resp.Body.Close()
 
 	// TODO: Don't use ioutil.ReadAll()
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("failed reading data from url: %s", u.String())
-		return err
+		return errors.Wrapf(err, "read data fetched from url: %s", u.String())
 	}
 
 	err = json.Unmarshal(data, result)
 	if err != nil {
-		fmt.Printf("failed unmarshalling data: %s", string(data))
+		return errors.Wrapf(err, "unmarshal data: %s", string(data))
 	}
-	return err
+	return nil
 }

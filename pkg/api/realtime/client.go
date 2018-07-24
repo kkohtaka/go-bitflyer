@@ -5,7 +5,6 @@ package realtime
 
 import (
 	jsonencoding "encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"sync"
@@ -17,6 +16,7 @@ import (
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/executions"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/markets"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/ticker"
+	"github.com/pkg/errors"
 )
 
 var (
@@ -71,7 +71,7 @@ func (c *Client) APIEndpoint() string {
 func (c *Client) Connect() (*Session, error) {
 	conn, _, err := websocket.DefaultDialer.Dial(c.Endpoint, nil)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrapf(err, "open WebSocket connection to endpoint: %s", c.Endpoint)
 	}
 	return &Session{
 		Conn: conn,
@@ -85,7 +85,11 @@ type Session struct {
 }
 
 func (sess *Session) Close() error {
-	return sess.Conn.Close()
+	err := sess.Conn.Close()
+	if err != nil {
+		return errors.Wrap(err, "close WebSocket session")
+	}
+	return nil
 }
 
 // Subscriber
@@ -171,8 +175,7 @@ func (s *Subscriber) ListenAndServe(sess *Session) error {
 		for {
 			_, data, err := sess.Conn.ReadMessage()
 			if err != nil {
-				log.Println("read:", err)
-				done <- errors.New("session was closed")
+				done <- errors.Wrap(err, "read next RPC message")
 				return
 			}
 			var msg Message
@@ -248,11 +251,13 @@ func (s *Subscriber) ListenAndServe(sess *Session) error {
 		}
 		msg, err := jsonrpc.EncodeClientRequest("subscribe", param)
 		if err != nil {
-			log.Fatal("encode:", err)
+			log.Println("encode:", err)
+			continue
 		}
 		err = sess.Conn.WriteMessage(websocket.TextMessage, msg)
 		if err != nil {
-			log.Fatal("write message:", err)
+			log.Println("write message:", err)
+			continue
 		}
 	}
 

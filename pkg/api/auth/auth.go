@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/kkohtaka/go-bitflyer/pkg/api"
+	"github.com/pkg/errors"
 )
 
 type AuthConfig struct {
@@ -19,8 +20,11 @@ type AuthConfig struct {
 	APISecret string
 }
 
-func GenerateAuthHeaders(config *AuthConfig, now time.Time, api api.API, req api.Request) *http.Header {
-	url := api.BaseURL()
+func GenerateAuthHeaders(config *AuthConfig, now time.Time, api api.API, req api.Request) (*http.Header, error) {
+	url, err := api.BaseURL()
+	if err != nil {
+		return nil, errors.Wrapf(err, "set base URI")
+	}
 	url.RawQuery = req.Query()
 
 	timestamp := fmt.Sprintf("%d", now.Unix())
@@ -42,5 +46,5 @@ func GenerateAuthHeaders(config *AuthConfig, now time.Time, api api.API, req api
 	header.Set("ACCESS-TIMESTAMP", timestamp)
 	header.Set("ACCESS-SIGN", sign)
 
-	return &header
+	return &header, nil
 }

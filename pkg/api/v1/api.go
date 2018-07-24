@@ -5,8 +5,9 @@ package v1
 
 import (
 	"fmt"
-	"log"
 	"net/url"
+
+	"github.com/pkg/errors"
 )
 
 type API struct {
@@ -19,10 +20,10 @@ func NewAPI(c *Client, apiPath string) *API {
 	}
 }
 
-func (api *API) BaseURL() url.URL {
+func (api *API) BaseURL() (*url.URL, error) {
 	u, err := url.ParseRequestURI(api.url)
 	if err != nil {
-		log.Fatalf("Failed parsing a request URI: %+v", err)
+		return nil, errors.Wrapf(err, "parse URI: %s", api.url)
 	}
-	return *u
+	return u, nil
 }
