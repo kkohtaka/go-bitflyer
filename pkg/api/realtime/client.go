@@ -6,7 +6,6 @@ package realtime
 import (
 	jsonencoding "encoding/json"
 	"fmt"
-	"log"
 	"sync"
 
 	jsonrpc "github.com/gorilla/rpc/v2/json2"
@@ -17,6 +16,7 @@ import (
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/markets"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/ticker"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 )
 
 var (
@@ -104,14 +104,34 @@ type Subscriber struct {
 	subscriptions []Channel
 	handlers      map[Channel]interface{}
 	msgc          chan ChannelMessage
+
+	logger *zap.SugaredLogger
+}
+
+type SubscriberOpts struct {
+	Debug bool
 }
 
 func NewSubscriber() *Subscriber {
+	return NewSubscriberWithOpts(nil)
+}
+
+func NewSubscriberWithOpts(opts *SubscriberOpts) *Subscriber {
+	var base *zap.Logger
+	if opts == nil {
+		opts = &SubscriberOpts{}
+	}
+	if opts.Debug {
+		base, _ = zap.NewProduction()
+	} else {
+		base, _ = zap.NewDevelopment()
+	}
 	return &Subscriber{
 		mtx:           sync.Mutex{},
 		subscriptions: make([]Channel, 0),
 		handlers:      map[Channel]interface{}{},
 		msgc:          make(chan ChannelMessage),
+		logger:        base.Sugar(),
 	}
 }
 
@@ -178,10 +198,20 @@ func (s *Subscriber) ListenAndServe(sess *Session) error {
 				done <- errors.Wrap(err, "read next RPC message")
 				return
 			}
+			// TODO(kkohtaka): Handle responses of subscription requests
 			var msg Message
 			err = json.Unmarshal(data, &msg)
 			if err != nil {
-				log.Println("unmarshal json:", err, string(data))
+				s.logger.Warnw("unmarshal json",
+					"err", err,
+					"data", string(data),
+				)
+				continue
+			}
+			if msg.Params.Channel == "" {
+				s.logger.Warnw("empty channel",
+					"data", string(data),
+				)
 				continue
 			}
 			s.msgc <- msg.Params
@@ -201,45 +231,72 @@ func (s *Subscriber) ListenAndServe(sess *Session) error {
 						var resp board.Response
 						err := json.Unmarshal(msg.Message, &resp)
 						if err != nil {
-							log.Printf("unmarshal json: %s", err)
+							s.logger.Warnw("unmarshal json",
+								"err", err,
+								"channel", msg.Channel,
+							)
 						}
 						err = h(resp)
 						if err != nil {
-							log.Println(err)
+							s.logger.Warnw("call handler",
+								"err", err,
+								"channel", msg.Channel,
+							)
 						}
 					case OrderBookUpdateHandler:
 						var resp board.Response
 						err := json.Unmarshal(msg.Message, &resp)
 						if err != nil {
-							log.Printf("unmarshal json: %s", err)
+							s.logger.Warnw("unmarshal json",
+								"err", err,
+								"channel", msg.Channel,
+							)
 						}
 						err = h(resp)
 						if err != nil {
-							log.Println(err)
+							s.logger.Warnw("call handler",
+								"err", err,
+								"channel", msg.Channel,
+							)
 						}
 					case TickerHandler:
 						var resp ticker.Response
 						err := json.Unmarshal(msg.Message, &resp)
 						if err != nil {
-							log.Printf("unmarshal json: %s", err)
+							s.logger.Warnw("unmarshal json",
+								"err", err,
+								"channel", msg.Channel,
+							)
 						}
 						err = h(resp)
 						if err != nil {
-							log.Println(err)
+							s.logger.Warnw("call handler",
+								"err", err,
+								"channel", msg.Channel,
+							)
 						}
 					case ExecutionHandler:
 						var resp executions.Response
 						err := json.Unmarshal(msg.Message, &resp)
 						if err != nil {
-							log.Printf("unmarshal json: %s", err)
+							s.logger.Warnw("unmarshal json",
+								"err", err,
+								"channel", msg.Channel,
+							)
 						}
 						err = h(resp)
 						if err != nil {
-							log.Println(err)
+							s.logger.Warnw("call handler",
+								"err", err,
+								"channel", msg.Channel,
+							)
 						}
 					}
 				} else {
-					log.Println("unknown channel:", msg.Channel, msg.Message)
+					s.logger.Warnw("unknown channel",
+						"channel", msg.Channel,
+						"message", msg.Message,
+					)
 				}
 			}()
 		}
@@ -251,12 +308,17 @@ func (s *Subscriber) ListenAndServe(sess *Session) error {
 		}
 		msg, err := jsonrpc.EncodeClientRequest("subscribe", param)
 		if err != nil {
-			log.Println("encode:", err)
+			s.logger.Warnw("encode jsonrpc",
+				"err", err,
+				"data", param,
+			)
 			continue
 		}
 		err = sess.Conn.WriteMessage(websocket.TextMessage, msg)
 		if err != nil {
-			log.Println("write message:", err)
+			s.logger.Warnw("write message",
+				"err", err,
+			)
 			continue
 		}
 	}

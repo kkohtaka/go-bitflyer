@@ -1,5 +1,5 @@
-hash: 18615178752a31f4a576bc5a71ed361a6391285823116e5c0346a7f848bd5489
-updated: 2018-07-24T09:24:28.837416315+09:00
+hash: c22f4d94e8beb6bdd08a62a4b1900ef69db98c30ce0a1ceebecba2d7c164944b
+updated: 2018-07-25T10:41:59.032074043+09:00
 imports:
 - name: github.com/google/go-querystring
   version: 53e6ce116135b80d037921a7fdd5138cf32d7a8a
@@ -17,4 +17,16 @@ imports:
   version: f7279a603edee96fe7764d3de9c6ff8cf9970994
 - name: github.com/pkg/errors
   version: 645ef00459ed84a119197bfb8d8205042c6df63d
+- name: go.uber.org/atomic
+  version: 1ea20fb1cbb1cc08cbd0d913a96dead89aa18289
+- name: go.uber.org/multierr
+  version: 3c4937480c32f4c13a875a1829af76c98ca3d40a
+- name: go.uber.org/zap
+  version: 4d45f9617f7d90f7a663ff21c7a4321dbe78098b
+  subpackages:
+  - buffer
+  - internal/bufferpool
+  - internal/color
+  - internal/exit
+  - zapcore
 testImports: []
