@@ -7,6 +7,7 @@ import (
 	jsonencoding "encoding/json"
 	"fmt"
 	"sync"
+	"time"
 
 	jsonrpc "github.com/gorilla/rpc/v2/json2"
 	"github.com/gorilla/websocket"
@@ -25,6 +26,10 @@ var (
 
 const (
 	APIEndpoint string = "wss://ws.lightstream.bitflyer.com/json-rpc"
+
+	HeartbeatIntervalSecond time.Duration = 60
+	ReadTimeoutSecond       time.Duration = 300
+	WriteTimeoutSecond      time.Duration = 5
 )
 
 type Message struct {
@@ -193,6 +198,7 @@ func (s *Subscriber) ListenAndServe(sess *Session) error {
 	go func(sess *Session) {
 		defer close(done)
 		for {
+			sess.Conn.SetReadDeadline(time.Now().Add(ReadTimeoutSecond * time.Second))
 			_, data, err := sess.Conn.ReadMessage()
 			if err != nil {
 				done <- errors.Wrap(err, "read next RPC message")
@@ -302,6 +308,30 @@ func (s *Subscriber) ListenAndServe(sess *Session) error {
 		}
 	}(sess)
 
+	go func(sess *Session) {
+		sess.Conn.SetPongHandler(func(string) error {
+			s.logger.Debug("receive pong message")
+			return nil
+		})
+		ticker := time.NewTicker(HeartbeatIntervalSecond * time.Second)
+		for {
+			select {
+			case <-ticker.C:
+				s.logger.Debug("send ping message")
+				err := sess.Conn.WriteControl(
+					websocket.PingMessage,
+					[]byte{},
+					time.Now().Add(WriteTimeoutSecond*time.Second),
+				)
+				if err != nil {
+					ticker.Stop()
+					sess.Close()
+					return
+				}
+			}
+		}
+	}(sess)
+
 	for _, channel := range s.subscriptions {
 		param := RequestParam{
 			Channel: channel,
@@ -314,6 +344,7 @@ func (s *Subscriber) ListenAndServe(sess *Session) error {
 			)
 			continue
 		}
+		sess.Conn.SetWriteDeadline(time.Now().Add(WriteTimeoutSecond * time.Second))
 		err = sess.Conn.WriteMessage(websocket.TextMessage, msg)
 		if err != nil {
 			s.logger.Warnw("write message",
