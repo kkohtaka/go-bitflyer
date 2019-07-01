@@ -11,6 +11,7 @@ import (
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/bankaccounts"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/board"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/chats"
+	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/childorder"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/coinins"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/coinouts"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/collateral"
@@ -172,6 +173,15 @@ func (c *Client) Coinouts(req *coinouts.Request) (*coinouts.Response, error) {
 func (c *Client) BankAccounts(req *bankaccounts.Request) (*bankaccounts.Response, error) {
 	var resp bankaccounts.Response
 	err := httpclient.New().Auth(c.AuthConfig).Request(NewAPI(c, bankaccounts.APIPath), req, &resp)
+	if err != nil {
+		return nil, errors.Wrap(err, "send HTTP request")
+	}
+	return &resp, nil
+}
+
+func (c *Client) SendChildOrder(req *childorder.Request) (*childorder.Response, error) {
+	var resp childorder.Response
+	err := httpclient.New().Auth(c.AuthConfig).Request(NewAPI(c, childorder.APIPath), req, &resp)
 	if err != nil {
 		return nil, errors.Wrap(err, "send HTTP request")
 	}
