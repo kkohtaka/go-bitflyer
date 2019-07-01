@@ -5,7 +5,6 @@ import (
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/markets"
 	"github.com/pkg/errors"
 	"net/http"
-	"time"
 )
 
 type Request struct {
@@ -14,7 +13,7 @@ type Request struct {
 	Side           Side                `json:"side"`
 	Price          float64             `json:"price"`
 	Size           float64             `json:"size"`
-	MinuteToExpire time.Duration       `json:"minute_to_expire"`
+	MinuteToExpire int64               `json:"minute_to_expire"`
 	TimeInForce    ExecutiveCondition  `json:"time_in_force"`
 }
 
