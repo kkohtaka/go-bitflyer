@@ -12,6 +12,7 @@ import (
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/board"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/cancelchildorder"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/chats"
+	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/childorders"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/coinins"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/coinouts"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/collateral"
@@ -192,6 +193,15 @@ func (c *Client) SendChildOrder(req *sendchildorder.Request) (*sendchildorder.Re
 func (c *Client) CancelChildOrder(req *cancelchildorder.Request) (*cancelchildorder.Response, error) {
 	var resp cancelchildorder.Response
 	err := httpclient.New().Auth(c.AuthConfig).Request(NewAPI(c, cancelchildorder.APIPath), req, &resp)
+	if err != nil {
+		return nil, errors.Wrap(err, "send HTTP request")
+	}
+	return &resp, nil
+}
+
+func (c *Client) ChildOrders(req *childorders.Request) (*childorders.Response, error) {
+	var resp childorders.Response
+	err := httpclient.New().Auth(c.AuthConfig).Request(NewAPI(c, childorders.APIPath), req, &resp)
 	if err != nil {
 		return nil, errors.Wrap(err, "send HTTP request")
 	}
