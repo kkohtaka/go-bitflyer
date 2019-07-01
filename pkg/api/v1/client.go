@@ -10,8 +10,8 @@ import (
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/balance"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/bankaccounts"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/board"
+	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/cancelchildorder"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/chats"
-	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/childorder"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/coinins"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/coinouts"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/collateral"
@@ -20,6 +20,7 @@ import (
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/health"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/markets"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/permissions"
+	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/sendchildorder"
 	"github.com/kkohtaka/go-bitflyer/pkg/api/v1/ticker"
 	"github.com/pkg/errors"
 )
@@ -179,9 +180,18 @@ func (c *Client) BankAccounts(req *bankaccounts.Request) (*bankaccounts.Response
 	return &resp, nil
 }
 
-func (c *Client) SendChildOrder(req *childorder.Request) (*childorder.Response, error) {
-	var resp childorder.Response
-	err := httpclient.New().Auth(c.AuthConfig).Request(NewAPI(c, childorder.APIPath), req, &resp)
+func (c *Client) SendChildOrder(req *sendchildorder.Request) (*sendchildorder.Response, error) {
+	var resp sendchildorder.Response
+	err := httpclient.New().Auth(c.AuthConfig).Request(NewAPI(c, sendchildorder.APIPath), req, &resp)
+	if err != nil {
+		return nil, errors.Wrap(err, "send HTTP request")
+	}
+	return &resp, nil
+}
+
+func (c *Client) CancelChildOrder(req *cancelchildorder.Request) (*cancelchildorder.Response, error) {
+	var resp cancelchildorder.Response
+	err := httpclient.New().Auth(c.AuthConfig).Request(NewAPI(c, cancelchildorder.APIPath), req, &resp)
 	if err != nil {
 		return nil, errors.Wrap(err, "send HTTP request")
 	}

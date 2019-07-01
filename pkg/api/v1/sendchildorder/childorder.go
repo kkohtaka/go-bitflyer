@@ -1,4 +1,4 @@
-package childorder
+package sendchildorder
 
 import (
 	"encoding/json"
