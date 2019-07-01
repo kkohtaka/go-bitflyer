@@ -24,23 +24,23 @@ type Response struct {
 type OrderType string
 
 const (
-	LIMIT  OrderType = "LIMIT"
-	MARKET OrderType = "MARKET"
+	Limit  OrderType = "LIMIT"
+	Market OrderType = "MARKET"
 )
 
 type Side string
 
 const (
-	BUY  Side = "BUY"
-	SELL Side = "SELL"
+	Buy  Side = "BUY"
+	Sell Side = "SELL"
 )
 
 type ExecutiveCondition string
 
 const (
 	GTC ExecutiveCondition = "GTC"
-	IOC ExecutiveCondition = "IOC"
-	FOK ExecutiveCondition = "FOK"
+	IoC ExecutiveCondition = "IOC"
+	FoK ExecutiveCondition = "FOK"
 )
 
 const (

@@ -21,11 +21,11 @@ type Request struct {
 type OrderState string
 
 const (
-	ACTIVE    OrderState = "ACTIVE"
-	COMPLETED OrderState = "COMPLETED"
-	CANCELED  OrderState = "CANCELED"
-	EXPIRED   OrderState = "EXPIRED"
-	REJECTED  OrderState = "REJECTED"
+	Active    OrderState = "ACTIVE"
+	Completed OrderState = "COMPLETED"
+	Canceled  OrderState = "CANCELED"
+	Expired   OrderState = "EXPIRED"
+	Rejected  OrderState = "REJECTED"
 )
 
 type Response []Order
